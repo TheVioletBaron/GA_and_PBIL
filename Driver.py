@@ -2,11 +2,11 @@ import PBIL.py as PBIL
 import GA.py as GA
 import sys
 
-"""
+'''
 Driver contains a main method which creates a GA object and a PBIL object.
 Those then run their respective programs and output their results, times, etc.
 Driver then formats/prints/saves those outputs as needed.
-"""
+'''
 
 def argumentError():
 	print("Please format the arguments as per the assignment sheet.")
