@@ -1,5 +1,5 @@
-import PBIL.py as PBIL
-import GA.py as GA
+from PBIL.py import PBIL
+from GA.py import GA
 import sys
 
 '''
