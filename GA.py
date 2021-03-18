@@ -5,9 +5,6 @@ import random
 solution_count = 10
 varible_count = 5
 
-
-
-
 count = 0
 solution_list = []
 
