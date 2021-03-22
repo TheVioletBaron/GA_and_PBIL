@@ -1,7 +1,5 @@
 import random
-
-
-
+from Individual import Individual
 
 test_file = "t3pm3-5555.spn.cnf"
 
