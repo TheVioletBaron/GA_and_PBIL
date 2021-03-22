@@ -6,7 +6,6 @@ test_file = "t3pm3-5555.spn.cnf"
 f = open(test_file, "r")
 lines = f.readlines()
 
-
 #Removing comments
 while lines[0][0] == 'c':
     lines.remove(lines[0])
@@ -74,11 +73,29 @@ for individual in solution_list:
     print(individual.bitString)
     print(individual.fitness)
 
-#print("\nfitness:")
-#print(fitness)
+#selection pseudocode
+def rankSort(individual):
+    return solution_list[individual].fitness
 
+def rankSelection():
+    solution_list = solution_list.sort(key=lambda x: x.fitness, reverse=True)
+    #rank
+    #from rank make lil number line
+    #select given number line
 
-    
+rankSelection()
+for individual in solution_list:
+    print(individual.fitness)
+# def boltzmannSelection(self):
+#     #go through and assign probability (e to the fitness/total e to the fitness)
+
+# def exponentialRankSelection(self):
+#     #assign prob to individuals - (e to the rank / sum of e to the rank)
+
+# def select(self):
+#     # pick a random number x
+#     # count through probability of individuals until u get to x
+#     # select the individual that x fell into
 
 
 #Notes
