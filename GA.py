@@ -20,6 +20,19 @@ print (solution_list)
 
 
 
+class GA(object):
+    
+    def __init__(self, file, popSize, select, cross_method, cross_prob, mut_prob, generations):
+        self.file = file
+        self.popSize = popSize
+        self.select = select
+        self.cross_method = cross_method
+        self.cross_prob = cross_prob
+        self.mut_prob = mut_prob
+        
+
+
+
 
 
 
