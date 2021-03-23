@@ -1,5 +1,5 @@
-from PBIL.py import PBIL
-from GA.py import GA
+from PBIL import Pbil
+from GA import GA
 import sys
 
 '''
@@ -25,7 +25,7 @@ def main():
 	if (ga_or_pbil == "g"):
 		g = GA()
 	elif (ga_or_pbil == "p"):
-		p = PBIL(problem_file, individuals_per_iter, pos_lr, neg_lr, mut_prob, mut_amnt, iter_cnt)
+		p = Pbil(problem_file, individuals_per_iter, pos_lr, neg_lr, mut_prob, mut_amnt, iter_cnt)
 	else:
 		argumentError()
 	
