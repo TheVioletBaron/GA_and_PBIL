@@ -58,10 +58,10 @@ class Pbil(object):
         
         self.file = file
         self.popSize = int(popSize)
-        self.alphaBest = alphaBest
-        self.alphaWorst = alphaWorst
-        self.mProb = mProb
-        self.mShift = mShift
+        self.alphaBest = float(alphaBest)
+        self.alphaWorst = float(alphaWorst)
+        self.mProb = float(mProb)
+        self.mShift = float(mShift)
         self.iters = int(iters)
         cnf = open(self.file)
         lines = cnf.readlines()
@@ -83,20 +83,23 @@ class Pbil(object):
                                 else:
                                         sample.append(1)
                         samples.append(sample)
-                best = 0
-                worst = length
+                best_fit = 0
+                worst_fit = length
+                best = []
+                worst = []
                 for sample in samples:
                         s_fit = self.evaluate_fitness(sample)
-                        if s_fit > best:
-                                best = s_fit
-                        if s_fit < worst:
-                                worst = s_fit
-                print(best)
-	#for sample in samples
-	#bestvec
-	#worstvec
-	#update toward
-	#update away
+                        if s_fit > best_fit:
+                                best_fit = s_fit
+                                best = sample
+                        if s_fit < worst_fit:
+                                worst_fit = s_fit
+                                worst = sample
+                for i in range(length):
+                        pv[i] = pv[i]*(1 - self.alphaBest) + best[i] * self.alphaBest
+                for i in range(length):
+                        if best[i] != worst[i]:
+                                pv[i] = pv[i]*(1 - self.alphaWorst) + worst[i] * self.alphaWorst
 	#mutate
                 self.iters = self.iters - 1
 
