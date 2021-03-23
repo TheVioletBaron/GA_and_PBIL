@@ -1,4 +1,5 @@
 import re
+import random
 '''
 Population Based Incremental Learning
 
@@ -28,12 +29,12 @@ class Pbil(object):
         """
         
         self.file = file
-        self.popSize = popSize
+        self.popSize = int(popSize)
         self.alphaBest = alphaBest
         self.alphaWorst = alphaWorst
         self.mProb = mProb
         self.mShift = mShift
-        self.iters = iters
+        self.iters = int(iters)
         cnf = open(self.file)
         lines = cnf.readlines()
         length = 0
@@ -44,8 +45,18 @@ class Pbil(object):
                        break
         pv = [0.5] * length
 
-	#while iter_count > iters:
-	#generate samples
+        samples = []
+        while self.iters:
+                while len(samples) < self.popSize:
+                        print("f")
+                        sample = []
+                        for i in pv:
+                                if (random.random() > i):
+                                        sample.append(0)
+                                else:
+                                        sample.append(1)
+                        samples.append(sample)
+                self.iters = self.iters - 1
 
 	#store Probability Vector as probVec List
 	#for sample in samples
