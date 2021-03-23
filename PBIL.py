@@ -38,14 +38,11 @@ class Pbil(object):
         lines = cnf.readlines()
         length = 0
         for line in lines:
-                has = re.match("(-?[0-9]*| )*", line)
+                has = re.match("(-?[0-9]+| )+", line)
                 if (has):
-                       print(line)
-                       print(has.group())
                        length = len(has.group().split())
                        break
         pv = [0.5] * length
-        print(length)
 
 	#while iter_count > iters:
 	#generate samples
