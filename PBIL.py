@@ -34,8 +34,29 @@ class Pbil(object):
         self.mProb = mProb
         self.mShift = mShift
         self.iters = iters
-        #store Probability Vector as probVec List
+        cnf = open(self.file)
+        lines = cnf.readlines()
+        length = 0
+        for line in lines:
+                has = re.match("(-?[0-9]*| )*", line)
+                if (has):
+                       print(line)
+                       print(has.group())
+                       length = len(has.group().split())
+                       break
+        pv = [0.5] * length
+        print(length)
 
+	#while iter_count > iters:
+	#generate samples
+
+	#store Probability Vector as probVec List
+	#for sample in samples
+	#bestvec
+	#worstvec
+	#update toward
+	#update away
+	#mutate
 
 
 

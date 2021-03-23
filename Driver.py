@@ -13,14 +13,14 @@ def argumentError():
 	sys.exit(0)
 
 def main():
-	problem_file = sys.argv[1]
-	individuals_per_iter = sys.argv[2]
-	pos_lr = sys.argv[3]
-	neg_lr = sys.argv[4]
-	mut_prob = sys.argv[5]
-	mut_amnt = sys.argv[6]
-	iter_cnt = sys.arv[7]
-	ga_or_pbil = sys.argv[8]
+	ga_or_pbil = sys.argv[1]
+	problem_file = sys.argv[2]
+	individuals_per_iter = sys.argv[3]
+	pos_lr = sys.argv[4]
+	neg_lr = sys.argv[5]
+	mut_prob = sys.argv[6]
+	mut_amnt = sys.argv[7]
+	iter_cnt = sys.argv[8]
 	
 	if (ga_or_pbil == "g"):
 		g = GA()
