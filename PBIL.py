@@ -37,18 +37,20 @@ class Pbil(object):
                 start_index = start_index + 1
         lines = lines[start_index:]
         for line in lines:
-                line = line.strip()
-                clause = line.split()
+                clause = line.strip().split()          
                 index = 0
-                while(clause[index] != "0"):
-                        #While loop takes the variables in each clause, finds the corresponding variable in the individual, and
-                        #compares the two to update the fitness accordingly
-                        variable = individual[abs(int(clause[index]))-1] #Take absolute value of to find index of variable in individual
-                        if(variable == 1 and int(clause[index])>0):
+                while(index<len(clause)):
+                        if(clause[index] == '0'):
                                 fitness += 1
-                        elif(variable == 0 and int(clause[index])<0):
-                                fitness += 1
-                        index += 1
+                                break
+                        
+                        variable = individual[abs(int(clause[index])) - 1]  # Take absolute value of to find index of variable in individual
+                        if(variable == 1 and int(clause[index]) > 0):
+                            index += 1
+                        elif(variable == 0 and int(clause[index]) < 0):
+                            index += 1
+                        else:
+                            break #If variable not satisfied, skip & break to next clause
         return fitness
 
 
@@ -100,7 +102,16 @@ class Pbil(object):
                 for i in range(length):
                         if best[i] != worst[i]:
                                 pv[i] = pv[i]*(1 - self.alphaWorst) + worst[i] * self.alphaWorst
-	#mutate
+                
+                while(i < len(pv)): #Mutation
+                    if(random.random() < mProb):
+                        if(random.random < 0.5):
+                            pv[i] = pv[i] * (1 - mShift)
+                        else:
+                            pv[i] = pv[i] * (1 - mShift) + mShift
+                    i += 1
+    #mutate
+    
                 self.iters = self.iters - 1
 
 
