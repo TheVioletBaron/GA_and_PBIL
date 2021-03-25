@@ -61,7 +61,7 @@ class GA(object):
     """
     def check_score(self, solution, clause):
         for literal in clause:
-            good_value = "0" if int(literal) > 0  else "1"  
+            good_value = "1" if int(literal) > 0  else "0"  
             if (solution.bitString[abs(int(literal)) - 1] != good_value):
                 return False
         return True
@@ -169,25 +169,44 @@ class GA(object):
         for individual in self.solution_list:
             for i in range (0, len(individual.bitString)):
                 rand = random.random()
-                if rand > self.mut_prob:
+                if rand < self.mut_prob:
                     new_bit = "0" if individual.bitString[i] == "1" else "1"
                     individual.bitString = individual.bitString[:i] + new_bit + individual.bitString[i + 1:]
     
     #randomly choose parents, ensure they are two diff individuals
     def choose_parents(self):
-        pos1 = random.randint(0,2)
+        #pos1 = random.randint(0,2)
         pos1 = random.randint(0, (len(self.solution_list) - 1))
         parent1 = self.solution_list[pos1]
         pos2 = random.randint(0, (len(self.solution_list) - 1))
-        while pos2 == pos1 and len(self.solution_list) > 1:
-            pos2 = random.randint(0, (len(self.solution_list) - 1))
         parent2 = self.solution_list[pos2]
+        # while parent1 == parent2 and len(self.solution_list) > 1:
+        while parent1 == parent2:
+            pos2 = random.randint(0, (len(self.solution_list) - 1))
+            parent2 = self.solution_list[pos2]
+        if (parent1 == parent2):
+            print("oops")
         return parent1, parent2
+
+    def crossover(self, cross_method):
+        new_breeding_pool = []
+        new_pop = 0
+        while new_pop < self.popSize:
+            if cross_method == "u":
+                new_breeding_pool.append(self.uniform_crossover())
+            else:
+                new_breeding_pool.append(self.one_point_crossover())
+            new_pop += 2
+        self.solution_list = new_breeding_pool
 
     def uniform_crossover(self):
         parent1, parent2 = self.choose_parents()
         # print(parent1.bitString)
         # print(parent2.bitString)
+        if (parent1 == parent2):
+            print("oops")
+        self.solution_list.remove(parent1)
+        self.solution_list.remove(parent2)
         child1_string = ""
         child2_string= ""
         for i in range (0, self.var_num):
@@ -203,14 +222,19 @@ class GA(object):
         child1.fitness = self.test_eval(self.clauses, child1)
         child2 = Individual(0, child2_string)
         child2.fitness = self.test_eval(self.clauses, child1)
+    
         # print(child1.bitString)
         # print(child2.bitString)
+
+
         return child1, child2
 
     def one_point_crossover(self):
         parent1, parent2 = self.choose_parents()
         # parent1.bitString = "0000000000"
         # parent2.bitString = "1111111111"
+        self.solution_list.remove(parent1)
+        self.solution_list.remove(parent2)
 
         # print(parent1.bitString)
         # print(parent2.bitString)
@@ -301,10 +325,11 @@ def main():
         elif select == "er":
             algo.exponential_rank_selection()
 
-        if cross_method == "u":
-            algo.uniform_crossover()
-        elif cross_method == "1p":
-            algo.one_point_crossover()
+        algo.crossover(cross_method)
+        # if cross_method == "u":
+        #     algo.uniform_crossover()
+        # elif cross_method == "1p":
+        #     algo.one_point_crossover()
 
         algo.mutate()
         gen_counter += 1
