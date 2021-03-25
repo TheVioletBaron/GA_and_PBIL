@@ -144,18 +144,15 @@ class GA(object):
         while total_selected < self.popSize:
             rand = random.uniform(0, self.total_probability)
             selected_ind = self.get_selected_individual(rand)
-            print(str(selected_ind == None))
-            if selected_ind == None:
-                print("oops")
             selected.append(selected_ind)
             total_selected += 1
             
-        print("selected") 
-        for ind in selected:
-            print(ind.fitness)
-        print("breeding pool")
-        for ind in self.solution_list:
-            print(str(ind.fitness) + " "  + str(ind.probability) )
+        # print("selected") 
+        # for ind in selected:
+        #     print(ind.fitness)
+        # print("breeding pool")
+        # for ind in self.solution_list:
+        #     print(str(ind.fitness) + " "  + str(ind.probability) )
     
     def get_selected_individual(self, random_number):
         prob_so_far = 0
@@ -165,11 +162,8 @@ class GA(object):
             if prob_so_far > random_number:
                 # total_selected += 1
                 selected = self.solution_list[prev_individual]
-                if selected == None:
-                    print("null ind selected")
                 return (selected)
             prev_individual += 1
-        print("never found it")
     
     def mutate(self):
         for individual in self.solution_list:
@@ -192,8 +186,8 @@ class GA(object):
 
     def uniform_crossover(self):
         parent1, parent2 = self.choose_parents()
-        print(parent1.bitString)
-        print(parent2.bitString)
+        # print(parent1.bitString)
+        # print(parent2.bitString)
         child1_string = ""
         child2_string= ""
         for i in range (0, self.var_num):
@@ -209,8 +203,8 @@ class GA(object):
         child1.fitness = self.test_eval(self.clauses, child1)
         child2 = Individual(0, child2_string)
         child2.fitness = self.test_eval(self.clauses, child1)
-        print(child1.bitString)
-        print(child2.bitString)
+        # print(child1.bitString)
+        # print(child2.bitString)
         return child1, child2
 
     def one_point_crossover(self):
@@ -218,31 +212,25 @@ class GA(object):
         # parent1.bitString = "0000000000"
         # parent2.bitString = "1111111111"
 
-        print(parent1.bitString)
-        print(parent2.bitString)
+        # print(parent1.bitString)
+        # print(parent2.bitString)
 
         crossover_point = random.randint(1, self.var_num - 2) #don't choose last or first positions
-        print("crossover here:")
-        print(crossover_point)
+        # print("crossover here:")
+        # print(crossover_point)
 
         child1_string = parent1.bitString[0:crossover_point] + parent2.bitString[crossover_point:]
         child2_string = parent2.bitString[0:crossover_point] + parent1.bitString[crossover_point:]
-        print(child1_string)
-        print(child2_string)
-        try:
-            child1 = Individual(0, child1_string)
-            child1.fitness = self.test_eval(self.clauses, child1)
-            child2 = Individual(0, child2_string)
-            child2.fitness = self.test_eval(self.clauses, child1)
-        except:
-            print("whoops")
-        # child1 = Individual(0, child1_string)
-        # child1.fitness = self.test_eval(self.clauses, child1)
-        # child2 = Individual(0, child2_string)
-        # child2.fitness = self.test_eval(self.clauses, child1)
+        # print(child1_string)
+        # print(child2_string)
+        
+        child1 = Individual(0, child1_string)
+        child1.fitness = self.test_eval(self.clauses, child1)
+        child2 = Individual(0, child2_string)
+        child2.fitness = self.test_eval(self.clauses, child1)
 
-        print(child1.bitString)
-        print(child2.bitString)
+        # print(child1.bitString)
+        # print(child2.bitString)
         return child1, child2
 
     def get_best(self):
@@ -251,6 +239,31 @@ class GA(object):
             if individual.fitness > max_solution.fitness:
                 max_solution = individual
         return max_solution
+
+    def convert_string(self, ex_solution):
+        new_string = ""
+        ex_solution = ex_solution.split()
+        for num in ex_solution:
+            if num != " ":
+                if int(num) > 0:
+                    new_string += "1"
+                else:
+                    new_string += "0"
+        print("ex string")
+        print(new_string)
+        return new_string
+    
+    def compar_strings(self, string1, string2):
+        # assert len(string1) == len(string2)
+        if len(string1) == len(string2):
+            print("not same length")
+        diffs = 0
+        for i in range (0, len(string1)):
+            if string1[i] != string2[i]:
+                diffs += 1
+        diffs = diffs / len(string1)
+        print("diffs: " + str(diffs))
+        return diffs
     
 def main():
     '''
@@ -264,13 +277,13 @@ def main():
     ga_or_pbil = sys.argv[8]
     '''
 
-    file_name = "s3v80c1000-7.cnf"
+    file_name = "HG-3SAT-V250-C1000-7.cnf"
     pop_size = 50
-    select = "er"
-    cross_method = "1p"
-    cross_prob = 0.30
+    select = "b"
+    cross_method = "u"
+    cross_prob = 0.1
     mut_prob = 0.008
-    iter_count = 70
+    iter_count = 20
     ga_or_pbil = "g"
 
     algo = GA(file_name, pop_size, select, cross_method, cross_prob, mut_prob, iter_count)
@@ -301,6 +314,10 @@ def main():
     print ("Best solution fitness is: " + str(best_indivdual.fitness))
     print ("Best solution bitstring is: " + best_indivdual.bitString)
 
+    # new_string = algo.convert_string("1 2 -3 4 -5 -6 7 -8 -9 -10 -11 12 13 14 15 -16 -17 18 -19 20 21 22 -23 -24 25 26 -27 -28 -29 30 -31 -32 -33 34 35 36 37 38 39 -40 41 -42 -43 -44 45 -46 -47 48 -49 50 51 -52 53 -54 55 -56 57 58 -59 -60 61 62 63 -64 65 -66 -67 -68 69 70 71 -72 -73 74 -75 76 77 78 79 -80 ")
+    # diffs = algo.compar_strings(new_string, best_indivdual.bitString)
+    # test_fitness = algo.test_eval(algo.clauses, new_string)
+    # print("test_fitness: " + str(test_fitness))
 
     
     
