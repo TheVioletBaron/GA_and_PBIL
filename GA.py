@@ -94,6 +94,8 @@ class GA(object):
     until a pool equal in size to the original population has been made.
     """
     def rankSelection(self):
+        self.total_probability = 0
+        
         self.solution_list.sort(key=self.rankSort)
         for i in range(0, len(self.solution_list)): #Calculating each Individual's probability
             self.solution_list[i].probability = (i + 1) / self.popSize
@@ -108,6 +110,7 @@ class GA(object):
     until a pool equal in size to the original population has been made.
     """
     def boltzmann_selection(self):
+        self.total_probability = 0
         #calculate denominator (sum of e to the fitness)
         denominator = 0
         for i in range(0, len(self.solution_list)):
@@ -119,6 +122,8 @@ class GA(object):
     
 
     def exponential_rank_selection(self):
+        self.total_probability = 0
+        
         self.solution_list.sort(key=self.rankSort)
         denominator = 0
         for i in range(0, len(self.solution_list)):
@@ -138,8 +143,13 @@ class GA(object):
         selected = []
         while total_selected < self.popSize:
             rand = random.uniform(0, self.total_probability)
-            selected.append(self.get_selected_individual(rand))
+            selected_ind = self.get_selected_individual(rand)
+            print(str(selected_ind == None))
+            if selected_ind == None:
+                print("oops")
+            selected.append(selected_ind)
             total_selected += 1
+            
         print("selected") 
         for ind in selected:
             print(ind.fitness)
@@ -154,8 +164,12 @@ class GA(object):
             prob_so_far += self.solution_list[i].probability
             if prob_so_far > random_number:
                 # total_selected += 1
-                return (self.solution_list[prev_individual])
+                selected = self.solution_list[prev_individual]
+                if selected == None:
+                    print("null ind selected")
+                return (selected)
             prev_individual += 1
+        print("never found it")
     
     def mutate(self):
         for individual in self.solution_list:
@@ -201,20 +215,31 @@ class GA(object):
 
     def one_point_crossover(self):
         parent1, parent2 = self.choose_parents()
+        # parent1.bitString = "0000000000"
+        # parent2.bitString = "1111111111"
 
         print(parent1.bitString)
         print(parent2.bitString)
 
-        crossover_point = random.randint(1, (len(self.var_num) - 2)) #don't choose last or first positions
+        crossover_point = random.randint(1, self.var_num - 2) #don't choose last or first positions
+        print("crossover here:")
         print(crossover_point)
 
-        child1_string = parent1.bitString[0:crossover_point] + parent2.bitString[crossover_point + 1:]
-        child2_string = parent2.bitString[0:crossover_point] + parent1.bitString[crossover_point + 1:]
-
-        child1 = Individual(0, child1_string)
-        child1.fitness = self.test_eval(self.clauses, child1)
-        child2 = Individual(0, child2_string)
-        child2.fitness = self.test_eval(self.clauses, child1)
+        child1_string = parent1.bitString[0:crossover_point] + parent2.bitString[crossover_point:]
+        child2_string = parent2.bitString[0:crossover_point] + parent1.bitString[crossover_point:]
+        print(child1_string)
+        print(child2_string)
+        try:
+            child1 = Individual(0, child1_string)
+            child1.fitness = self.test_eval(self.clauses, child1)
+            child2 = Individual(0, child2_string)
+            child2.fitness = self.test_eval(self.clauses, child1)
+        except:
+            print("whoops")
+        # child1 = Individual(0, child1_string)
+        # child1.fitness = self.test_eval(self.clauses, child1)
+        # child2 = Individual(0, child2_string)
+        # child2.fitness = self.test_eval(self.clauses, child1)
 
         print(child1.bitString)
         print(child2.bitString)
@@ -239,20 +264,22 @@ def main():
     ga_or_pbil = sys.argv[8]
     '''
 
-    file_name = "HG-3SAT-V250-C1000-7.cnf"
+    file_name = "s3v80c1000-7.cnf"
     pop_size = 50
-    select = "b"
-    cross_method = "u"
-    cross_prob = 0.75
-    mut_prob = 0.001
-    iter_count = 20
+    select = "er"
+    cross_method = "1p"
+    cross_prob = 0.30
+    mut_prob = 0.008
+    iter_count = 70
     ga_or_pbil = "g"
 
     algo = GA(file_name, pop_size, select, cross_method, cross_prob, mut_prob, iter_count)
     algo.readFile()
     algo.generate_pool()
-
     gen_counter = 0
+
+    # algo.one_point_crossover()
+    
     while gen_counter < iter_count:
         if select == "b":
             algo.boltzmann_selection()
@@ -268,6 +295,7 @@ def main():
 
         algo.mutate()
         gen_counter += 1
+   
     
     best_indivdual = algo.get_best()
     print ("Best solution fitness is: " + str(best_indivdual.fitness))
