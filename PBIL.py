@@ -77,7 +77,6 @@ class Pbil(object):
         pv = [0.5] * length
         samples = []
         while self.iters:
-                print(self.iters)
                 while len(samples) < self.popSize:
                         sample = []
                         for i in pv:
@@ -103,7 +102,7 @@ class Pbil(object):
                 for i in range(length):
                         if best[i] != worst[i]:
                                 pv[i] = pv[i]*(1 - self.alphaWorst) + worst[i] * self.alphaWorst
-                
+
                 while(i < len(pv)): #Mutation
                     if(random.random() < self.mProb):
                         if(random.random() < 0.5):
@@ -111,8 +110,8 @@ class Pbil(object):
                         else:
                             pv[i] = pv[i] * (1 - self.mShift) + self.mShift
                     i += 1
-    #mutate
-    
+                print(self.evaluate_fitness(best))
+                samples = []
                 self.iters = self.iters - 1
 
 
