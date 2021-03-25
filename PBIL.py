@@ -1,5 +1,6 @@
 import re
 import random
+import math
 '''
 Population Based Incremental Learning
 
@@ -74,9 +75,9 @@ class Pbil(object):
                        length = int(has.group().split()[0])
                        break
         pv = [0.5] * length
-        print(length)
         samples = []
         while self.iters:
+                print(self.iters)
                 while len(samples) < self.popSize:
                         sample = []
                         for i in pv:
@@ -86,7 +87,7 @@ class Pbil(object):
                                         sample.append(1)
                         samples.append(sample)
                 best_fit = 0
-                worst_fit = length
+                worst_fit = pow(2, 31)
                 best = []
                 worst = []
                 for sample in samples:
@@ -104,11 +105,11 @@ class Pbil(object):
                                 pv[i] = pv[i]*(1 - self.alphaWorst) + worst[i] * self.alphaWorst
                 
                 while(i < len(pv)): #Mutation
-                    if(random.random() < mProb):
-                        if(random.random < 0.5):
-                            pv[i] = pv[i] * (1 - mShift)
+                    if(random.random() < self.mProb):
+                        if(random.random() < 0.5):
+                            pv[i] = pv[i] * (1 - self.mShift)
                         else:
-                            pv[i] = pv[i] * (1 - mShift) + mShift
+                            pv[i] = pv[i] * (1 - self.mShift) + self.mShift
                     i += 1
     #mutate
     
