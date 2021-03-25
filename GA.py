@@ -12,6 +12,9 @@ class GA(object):
     total_probability = 0
     clauses = []
 
+    """Initiializing function for the GA class. Takes in a MAXSAT filename and variables specifying
+    how to run a GA algorithim on it. Function is used to generate a GA object.
+    """
     def __init__(self, file, popSize, select, cross_method, cross_prob, mut_prob, generations):
         self.file = file
         self.popSize = popSize
@@ -21,21 +24,25 @@ class GA(object):
         self.mut_prob = mut_prob
         self.clauses = []
     
+    """Function handle file reading on the MAXSAT problem, handling the first comment lines
+    before obtaining the number of variables, clauses, and finally grabbing the clauses
+    themselves and storing those in a list.
+    """
     def readFile(self):
         f = open(self.file, "r")
         lines = f.readlines()
-        #Removing comments
-        while lines[0][0] == 'c':
+        while lines[0][0] == 'c':   #Remove beggining comment lines in file
             lines.remove(lines[0])
 
-        first_line = lines[0].split()
+        first_line = lines[0].split() #Obtaining number of vairables and clauses 
         self.var_num = int(first_line[2])
         self.clause_num = int(first_line[3])
         lines.pop(0)
         self.clauses = lines
 
-        #adding in the GA random solution generation code so we can do everything together
-
+    """Function that generates an initial pool of Indivdual objects, each of which is assigned
+    a random bitstring with a length equal to all others.
+    """
     def generate_pool(self):
         for i in range(1, self.popSize):
             bitString = ""
@@ -46,13 +53,15 @@ class GA(object):
             self.solution_list.append(newIndividual)
         
         #self.evaluate_fitness(lines)
-        for individual in self.solution_list:
+        for individual in self.solution_list:   #Determines the fitness of each Individual
             self.test_eval(self.clauses, individual)
     
-    #Compare a clause of literals with an indivudal solution bit string
+    """Function that takes an individual solution and a given clause and checks
+    if the solution satifies the clause. Returns a boolean.
+    """
     def check_score(self, solution, clause):
         for literal in clause:
-            good_value = "0" if int(literal) > 0  else "1"#  check if literal j is positive or negative, maybe later jsut check if first char is - instead of casting
+            good_value = "0" if int(literal) > 0  else "1"  
             if (solution.bitString[abs(int(literal)) - 1] != good_value):
                 return False
         return True
@@ -66,22 +75,27 @@ class GA(object):
     #             if (self.check_score(self.solution_list[i], literals_list)):
     #                 self.solution_list[i].fitness += 1
     
-    #checks by individual what fitness is -- makes crossover easier
+    """Given a set of problems and an Individual solution object, determines the fitness
+    score of that Individual. Returns the updated fitness score as an int.
+    """
     def test_eval(self, lines, individual):
         for line in lines:
-            literals_list = line.split() #  list of litersls
+            literals_list = line.split()
             if (self.check_score(individual, literals_list)):
                 individual.fitness += 1
         return individual.fitness
 
-    #defines that individuals should be sorted by fitness
+    #defines that individuals should be sorted by fitness  THIS SEEMS STRANGE MAYBE?
     def rankSort(self, individual):
         return individual.fitness
 
+    """Function that executes rank selection on the pool of solutions by first ranking
+    them by their fitness scores, and then selecting based on rank-based probailities
+    until a pool equal in size to the original population has been made.
+    """
     def rankSelection(self):
         self.solution_list.sort(key=self.rankSort)
-        #calculate probability for each ind
-        for i in range(0, len(self.solution_list)):
+        for i in range(0, len(self.solution_list)): #Calculating each Individual's probability
             self.solution_list[i].probability = (i + 1) / self.popSize
             self.total_probability += self.solution_list[i].probability
         # print("breeding pool")
@@ -89,22 +103,23 @@ class GA(object):
             # print(str(ind.fitness) + " " + str(ind.probability) )
         self.select_breeding_pool()
 
-    #calculate boltmann probabilites
+    """Function that executes boltzmann selection by summing up all fitness scores
+    as a denominator and then determining individual probabilities. Selection occurs
+    until a pool equal in size to the original population has been made.
+    """
     def boltzmann_selection(self):
         #calculate denominator (sum of e to the fitness)
         denominator = 0
         for i in range(0, len(self.solution_list)):
             denominator += exp(self.solution_list[i].fitness)
-
         for i in range(0, len(self.solution_list)):
             self.solution_list[i].probability = exp(self.solution_list[i].fitness) / denominator
             self.total_probability += self.solution_list[i].probability
-        
         self.select_breeding_pool()
     
+
     def exponential_rank_selection(self):
         self.solution_list.sort(key=self.rankSort)
-
         denominator = 0
         for i in range(0, len(self.solution_list)):
             denominator += exp(i)
