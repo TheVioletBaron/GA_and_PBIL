@@ -137,8 +137,8 @@ class GA(object):
 
     #probabalistically select individuals
     def select_breeding_pool(self):
-        prob_so_far = 0
-        prev_individual = -1
+        #prob_so_far = 0
+        #prev_individual = -1
         total_selected = 0
         selected = []
         while total_selected < self.popSize:
@@ -301,7 +301,7 @@ def main():
     ga_or_pbil = sys.argv[8]
     '''
 
-    file_name = "HG-3SAT-V250-C1000-7.cnf"
+    file_name = "t3pm3-5555.spn.cnf"
     pop_size = 50
     select = "b"
     cross_method = "u"
