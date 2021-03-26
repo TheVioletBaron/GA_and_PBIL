@@ -182,10 +182,11 @@ class GA(object):
         parent2 = self.solution_list[pos2]
         # while parent1 == parent2 and len(self.solution_list) > 1:
         while parent1 == parent2:
+            if len(self.solution_list) == 1:
+                return parent1, parent1
             pos2 = random.randint(0, (len(self.solution_list) - 1))
             parent2 = self.solution_list[pos2]
-        if (parent1 == parent2):
-            print("oops")
+
         return parent1, parent2
 
     def crossover(self, cross_method):
@@ -193,9 +194,13 @@ class GA(object):
         new_pop = 0
         while new_pop < self.popSize:
             if cross_method == "u":
-                new_breeding_pool.append(self.uniform_crossover())
+                child1, child2 = self.uniform_crossover()
+                new_breeding_pool.append(child1)
+                new_breeding_pool.append(child2)
             else:
-                new_breeding_pool.append(self.one_point_crossover())
+                child1, child2 = self.one_point_crossover()
+                new_breeding_pool.append(child1)
+                new_breeding_pool.append(child2)
             new_pop += 2
         self.solution_list = new_breeding_pool
 
@@ -206,7 +211,8 @@ class GA(object):
         if (parent1 == parent2):
             print("oops")
         self.solution_list.remove(parent1)
-        self.solution_list.remove(parent2)
+        if parent1 != parent2:
+            self.solution_list.remove(parent2)
         child1_string = ""
         child2_string= ""
         for i in range (0, self.var_num):
@@ -234,27 +240,21 @@ class GA(object):
         # parent1.bitString = "0000000000"
         # parent2.bitString = "1111111111"
         self.solution_list.remove(parent1)
-        self.solution_list.remove(parent2)
-
-        # print(parent1.bitString)
-        # print(parent2.bitString)
+        if parent1 != parent2:
+            self.solution_list.remove(parent2)
+        
+        
 
         crossover_point = random.randint(1, self.var_num - 2) #don't choose last or first positions
-        # print("crossover here:")
-        # print(crossover_point)
-
+        
         child1_string = parent1.bitString[0:crossover_point] + parent2.bitString[crossover_point:]
         child2_string = parent2.bitString[0:crossover_point] + parent1.bitString[crossover_point:]
-        # print(child1_string)
-        # print(child2_string)
         
         child1 = Individual(0, child1_string)
         child1.fitness = self.test_eval(self.clauses, child1)
         child2 = Individual(0, child2_string)
         child2.fitness = self.test_eval(self.clauses, child1)
 
-        # print(child1.bitString)
-        # print(child2.bitString)
         return child1, child2
 
     def get_best(self):
@@ -278,9 +278,6 @@ class GA(object):
         return new_string
     
     def compar_strings(self, string1, string2):
-        # assert len(string1) == len(string2)
-        if len(string1) == len(string2):
-            print("not same length")
         diffs = 0
         for i in range (0, len(string1)):
             if string1[i] != string2[i]:
@@ -302,12 +299,13 @@ def main():
     '''
 
     file_name = "t3pm3-5555.spn.cnf"
-    pop_size = 50
+    file_name = "s3v80c1000-7.cnf"
+    pop_size = 500
     select = "b"
     cross_method = "u"
-    cross_prob = 0.1
-    mut_prob = 0.008
-    iter_count = 20
+    cross_prob = 0.3
+    mut_prob = 0.02
+    iter_count = 75
     ga_or_pbil = "g"
 
     algo = GA(file_name, pop_size, select, cross_method, cross_prob, mut_prob, iter_count)
@@ -318,6 +316,7 @@ def main():
     # algo.one_point_crossover()
     
     while gen_counter < iter_count:
+        
         if select == "b":
             algo.boltzmann_selection()
         elif select == "r":
@@ -325,7 +324,11 @@ def main():
         elif select == "er":
             algo.exponential_rank_selection()
 
-        algo.crossover(cross_method)
+        
+        random_float = random.random()
+        if random_float < cross_prob:
+            print ("crossover is happening")
+            algo.crossover(cross_method)
         # if cross_method == "u":
         #     algo.uniform_crossover()
         # elif cross_method == "1p":

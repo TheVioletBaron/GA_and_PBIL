@@ -8,4 +8,4 @@ class Individual:
         self.bitString = bitString
 
     def setProb(self, newProbability):
-        this.probability = newProbability
+        self.probability = newProbability
