@@ -1,6 +1,7 @@
 from PBIL import Pbil
 from GA import GA
 import sys
+import math
 
 '''
 Driver contains a main method which creates a GA object and a PBIL object.
@@ -26,6 +27,13 @@ def main():
 		g = GA()
 	elif (ga_or_pbil == "p"):
 		p = Pbil(problem_file, individuals_per_iter, pos_lr, neg_lr, mut_prob, mut_amnt, iter_cnt)
+		print("File name: " + problem_file)
+		print("Variable count: " + str(p.length))
+		print("Clause count: " + str(p.max_fit))
+		print("Clauses satisfied: " + str(p.final_count))
+		print("Percentage satsified: " + str(round(p.final_count/p.max_fit*100, 2)))
+		print("Satisfying assignment: " + str(p.best))
+		print("Iteration found: " + str(p.final_iter))
 	else:
 		argumentError()
 	

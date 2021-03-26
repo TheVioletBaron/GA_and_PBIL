@@ -40,7 +40,7 @@ class Pbil(object):
         for line in lines:
                 clause = line.strip().split()          
                 index = 0
-                while(index<len(clause)):
+                while(index < len(clause)):
                         if(clause[index] == '0'):
                                 fitness += 1
                                 break
@@ -68,14 +68,21 @@ class Pbil(object):
         self.iters = int(iters)
         cnf = open(self.file)
         lines = cnf.readlines()
-        length = 0
+        self.length = 0
+        max_fit = 0
         for line in lines:
-                has = re.search("[0-9]+", line)
+                has = re.search("[0-9]+ [0-9]+", line)
                 if (has):
                        length = int(has.group().split()[0])
+                       max_fit = int(has.group().split()[1])
                        break
         pv = [0.5] * length
         samples = []
+        best_fit = 0
+        worst_fit = max_fit
+        best = []
+        worst = []
+        max_iters = self.iters
         while self.iters:
                 while len(samples) < self.popSize:
                         sample = []
@@ -86,7 +93,7 @@ class Pbil(object):
                                         sample.append(1)
                         samples.append(sample)
                 best_fit = 0
-                worst_fit = pow(2, 31)
+                worst_fit = max_fit
                 best = []
                 worst = []
                 for sample in samples:
@@ -110,9 +117,12 @@ class Pbil(object):
                         else:
                             pv[i] = pv[i] * (1 - self.mShift) + self.mShift
                     i += 1
-                print(self.evaluate_fitness(best))
                 samples = []
                 self.iters = self.iters - 1
-
-
-
+                if (self.evaluate_fitness(best) == max_fit):
+                        break
+        self.final_iter = max_iters - self.iters
+        self.final_count = self.evaluate_fitness(best)
+        self.best = best
+        self.max_fit = max_fit
+        self.length = length
