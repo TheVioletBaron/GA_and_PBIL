@@ -61,7 +61,7 @@ class GA(object):
     if the solution satifies the clause. Returns a boolean.
     """
     def check_score(self, solution, clause):
-        for literal in clause[:-1]:
+        for literal in clause[:-1]: #Needs to ignore the 0 at the end of each clause
             good_value = "1" if int(literal) > 0  else "0"  
             if (solution.bitString[abs(int(literal)) - 1] != good_value):
                 return False
@@ -397,12 +397,12 @@ def main():
 
     file_name = "t3pm3-5555.spn.cnf"
     #file_name = "s3v80c1000-7.cnf"
-    pop_size = 200
-    select = "r" #r is calling rank2 not rank right now
+    pop_size = 100
+    select = "b" #r is calling rank2 not rank right now
     cross_method = "1p"
     cross_prob = 0.7
     mut_prob = 0.01
-    iter_count = 200
+    iter_count = 1000
     ga_or_pbil = "g"
     bestInd = Individual(0, '1') 
     iterFound = 0
@@ -425,13 +425,14 @@ def main():
        
     
         #algo.crossover(cross_method)
-        
-        # if cross_method == "u":
-        #     algo.uniform_crossover()
-        # elif cross_method == "1p":
-        #     algo.one_point_crossover()
+        '''
+        if cross_method == "u":
+            algo.uniform_crossover()
+        elif cross_method == "1p":
+            algo.one_point_crossover()
 
-        #algo.mutate()
+        algo.mutate()
+        '''
         for ind in algo.solution_list: #keeps track of best Individual so far
             if ind.fitness > bestInd.fitness:
                 bestInd = Individual(ind.fitness, ind.bitString) 
