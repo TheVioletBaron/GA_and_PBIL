@@ -245,7 +245,7 @@ class GA(object):
         child1 = Individual(0, child1_string)
         child1.fitness = self.test_eval(self.clauses, child1)
         child2 = Individual(0, child2_string)
-        child2.fitness = self.test_eval(self.clauses, child1)
+        child2.fitness = self.test_eval(self.clauses, child2)
         return child1, child2
 
     """Performs one-point crossover, choosing two parents, randomly selecting a crossover
@@ -264,7 +264,7 @@ class GA(object):
         child1 = Individual(0, child1_string)
         child1.fitness = self.test_eval(self.clauses, child1)
         child2 = Individual(0, child2_string)
-        child2.fitness = self.test_eval(self.clauses, child1)
+        child2.fitness = self.test_eval(self.clauses, child2)
         return child1, child2
 
     """Iterates through the solution list and returns the Individual object
@@ -396,13 +396,13 @@ def main():
     ga_or_pbil = sys.argv[8]
     '''
 
-    file_name = "t3pm3-5555.spn.cnf"
+    #file_name = "t3pm3-5555.spn.cnf"
     file_name = "s3v80c1000-7.cnf"
     pop_size = 100
     select = "r" #r is calling rank2 not rank right now
     cross_method = "1p"
     cross_prob = 0.7
-    mut_prob = 0.01
+    mut_prob = 0.04
     iter_count = 1000
     ga_or_pbil = "g"
     bestInd = Individual(0, '1') 
@@ -435,7 +435,6 @@ def main():
         algo.mutate()
 
         best_of_gen = algo.get_best()
-        print(best_of_gen.fitness)
         if best_of_gen.fitness > bestInd.fitness:
             bestInd = best_of_gen
             print("new best found")
