@@ -38,15 +38,20 @@ class Pbil(object):
                 start_index = start_index + 1
         lines = lines[start_index:]
         for line in lines:
-                clause = line.strip().split()
-                passed = True
-                for cv in clause:
-                        sv = individual[abs(int(cv)) - 1]
-                        if not ((sv == 1) and (int(cv) > 0)) or ((sv == 0) and (int(cv) < 0)):
-                                if cv != '0':
-                                        passed = False
-                if passed:
-                        fitness = fitness + 1
+                clause = line.strip().split()          
+                index = 0
+                while(index<len(clause)):
+                        if(clause[index] == '0'):
+                                fitness += 1
+                                break
+                        
+                        variable = individual[abs(int(clause[index])) - 1]  # Take absolute value of to find index of variable in individual
+                        if(variable == 1 and int(clause[index]) > 0):
+                            index += 1
+                        elif(variable == 0 and int(clause[index]) < 0):
+                            index += 1
+                        else:
+                            break #If variable not satisfied, skip & break to next clause
         return fitness
 
 
@@ -66,32 +71,24 @@ class Pbil(object):
         length = 0
         max_fit = 0
         for line in lines:
-                has = re.search("[0-9]+[ ]+[0-9]+", line)
+                has = re.search("[0-9]+", line)
                 if (has):
-                       print("line: " + line)
                        length = int(has.group().split()[0])
                        max_fit = int(has.group().split()[1])
-                       print("max_fit: " + str(max_fit))
-                       print("length: " + str(length))
                        break
         pv = [0.5] * length
         samples = []
-        best_fit = 0
-        worst_fit = max_fit + 1
-        best = []
-        worst = []
-        max_iters = self.iters
         while self.iters:
                 while len(samples) < self.popSize:
                         sample = []
                         for i in pv:
-                                if (random.random() < i):
+                                if (random.random() > i):
                                         sample.append(0)
                                 else:
                                         sample.append(1)
                         samples.append(sample)
                 best_fit = 0
-                worst_fit = max_fit + 1
+                worst_fit = pow(2, 31)
                 best = []
                 worst = []
                 for sample in samples:
@@ -106,22 +103,18 @@ class Pbil(object):
                         pv[i] = pv[i]*(1 - self.alphaBest) + best[i] * self.alphaBest
                 for i in range(length):
                         if best[i] != worst[i]:
-                                pv[i] = pv[i]*(1 - self.alphaWorst) - worst[i] * self.alphaWorst
-                i = 0
+                                pv[i] = pv[i]*(1 - self.alphaWorst) + worst[i] * self.alphaWorst
+
                 while(i < len(pv)): #Mutation
-                        if(random.random() < self.mProb):
-                                if(random.random() < 0.5):
-                                        pv[i] = pv[i] * (1 - self.mShift)
-                                else:
-                                        pv[i] = pv[i] * (1 - self.mShift) + self.mShift
-                        i += 1
+                    if(random.random() < self.mProb):
+                        if(random.random() < 0.5):
+                            pv[i] = pv[i] * (1 - self.mShift)
+                        else:
+                            pv[i] = pv[i] * (1 - self.mShift) + self.mShift
+                    i += 1
+                print(
                 samples = []
                 self.iters = self.iters - 1
-                if (self.evaluate_fitness(best) == max_fit):
-                        break
 
-        self.final_iter = max_iters - self.iters
-        self.final_count = self.evaluate_fitness(best)
-        self.best = best
-        self.max_fit = max_fit
-        self.length = length
+
+
