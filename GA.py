@@ -345,7 +345,7 @@ class GA(object):
     """
     def runner(self):
         iterFound = 0
-        start_time = int(round(time.time()) * 1000)
+        start_time = int(round(time.time() * 1000))
         self.readFile()
         self.generate_pool()
         gen_counter = 0
@@ -371,18 +371,16 @@ class GA(object):
             best_of_gen = self.get_best()
             if best_of_gen.fitness > bestInd.fitness:
                 bestInd = best_of_gen
-                print("new best found")
-                print(best_of_gen.fitness)
                 iterFound = gen_counter
             gen_counter += 1
-            if gen_counter % 200 == 0:
-                print (str(gen_counter))
-                print (str(bestInd.fitness))
-        end_time = int(round(time.time()) * 1000) #Recording the duration of the test
+
+        end_time = int(round(time.time() * 1000)) #Recording the duration of the test
         complete_percentage = (bestInd.fitness / self.clause_num) * 100
         best_string = self.convert_string_to_vars(bestInd.bitString) #Reformatting the best solution found
     
         print ("Filename:" + self.file_name)
+        print ("Population: " + str(self.popSize))
+        print ("Iterations: " + str(self.generations))
         print ("Total number of variables/clauses possible: " + str(self.var_num) + "/" + str(self.clause_num))
         print ("Number of clauses satisfied: " + str(bestInd.fitness) + " or " + str(complete_percentage) + "%")
         print ("Best solution: " + best_string)
