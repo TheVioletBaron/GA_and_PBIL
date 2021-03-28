@@ -1,4 +1,11 @@
-#Aly and Jasper
+"""
+Authors: Aly Hummel and Jasper Gordon
+Date 28 March 2021
+Course: Nature Inspired Computation
+File Description: This file holds the GA class which takes in certain arguments (a file of MAXSAT problems 
++ a number of variables dictating the variable settings for running the GA algorithm on them). The class
+runs the algorithm and has the ability to output the best possible solutions.
+"""
 import random
 from Individual import Individual
 from math import *
@@ -27,10 +34,6 @@ class GA(object):
         self.clauses = []
         self.sum_of_ranks = 0
         
-
-
-        
-    
     """Function handle file reading on the MAXSAT problem, handling the first comment lines
     before obtaining the number of variables, clauses, and finally grabbing the clauses
     themselves and storing those in a list.
@@ -40,7 +43,6 @@ class GA(object):
         lines = f.readlines()
         while lines[0][0] == 'c':   #Remove beggining comment lines in file
             lines.remove(lines[0])
-
         first_line = lines[0].split() #Obtaining number of vairables and clauses 
         self.var_num = int(first_line[2])
         self.clause_num = int(first_line[3])
@@ -58,9 +60,7 @@ class GA(object):
                 bitString = bitString + new_bit
             newIndividual = Individual(0, bitString)
             self.solution_list.append(newIndividual)
-        
-        #self.evaluate_fitness(lines)
-        for individual in self.solution_list:   #Determines the fitness of each Individual
+        for individual in self.solution_list: #Determines the fitness of each Individual
             self.test_eval(self.clauses, individual)
     
     """Function that takes an Individual solution and a given clause and checks
@@ -72,16 +72,7 @@ class GA(object):
             if (solution.bitString[abs(int(literal)) - 1] != good_value):
                 return False
         return True
-    
-    #iterates through all lines in file and compares to each individual 
-    # def evaluate_fitness(self, lines):
-    #     for p in range(1, self.clause_num):
-    #         line = lines[p]
-    #         literals_list = line.split() #  list of litersls
-    #         for  i in range (0, len(self.solution_list)): # iterate through each individual i
-    #             if (self.check_score(self.solution_list[i], literals_list)):
-    #                 self.solution_list[i].fitness += 1
-    
+ 
     """Given a set of problems and an Individual solution object, determines the fitness
     score of that Individual. Returns the updated fitness score as an int.
     """
@@ -132,7 +123,6 @@ class GA(object):
         for j in range(0, len(self.solution_list)):
             self.solution_list[j].probability = exp(j) / self.sum_of_ranks
             self.total_probability += self.solution_list[j].probability
-
         self.select_breeding_pool()
 
     """Probabilistically selects Individuals and places them into the breeding
@@ -147,7 +137,6 @@ class GA(object):
             selected_ind = self.get_selected_individual(rand)
             selected.append(selected_ind)
             total_selected += 1
-        
         self.solution_list = []
         self.solution_list = selected
     
@@ -161,8 +150,6 @@ class GA(object):
         for i in range(0, len(self.solution_list)):
             prob_so_far += self.solution_list[i].probability
             if prob_so_far > random_number:
-                # total_selected += 1
-                #selected = self.solution_list[prev_individual] #this still confuses me, seems like it should be that one that passed
                 return (self.solution_list[i])
             prev_individual += 1
     
@@ -218,13 +205,9 @@ class GA(object):
     """
     def uniform_crossover(self):
         parent1, parent2 = self.choose_parents()
-        # if (parent1 == parent2):
-        #     print("oops")
-        # print("parent1 before removal: " + parent1.bitString)
         self.solution_list.remove(parent1)
         if parent1 != parent2:
             self.solution_list.remove(parent2)
-        # print("parent 1 after removal: " + parent1.bitString)
         child1_string = ""
         child2_string= ""
         for i in range (0, self.var_num):
@@ -293,7 +276,6 @@ class GA(object):
         for char in bitstring:
             if char == '1':
                 new_string += str(var_counter)
-
             else:
                 new_string += "-"
                 new_string += str(var_counter)
