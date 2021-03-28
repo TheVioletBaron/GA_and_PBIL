@@ -320,70 +320,51 @@ class GA(object):
         print("diffs: " + str(diffs))
         return diffs
 
+    """A seperate attempt to consolidate the selection, crossover, and mutation all in one function.
+    Instead of calling each one at a time on the entire population, this method selects two
+    parent solutions, crosses over, mutates, and adds the new solutions to the breeding pool,
+    repeating until the population size is complete.
+    """
     def rank2(self):
-        
-        #This is currently the only function called during each iteration.  BEGIN and END mark points where each type
-        #of slection and crossover would  be called as functions
-
-
         new_pool = []
-        self.solution_list.sort(key=self.rankSort)
-
-        rankList = [0] * self.popSize #BEGIN Selection
-
+        self.solution_list.sort(key=self.rankSort) #Sorting the solution list
+        rankList = [0] * self.popSize #Begin Selection
         for i in range(0, self.popSize): 
-                rankList[i] = self.popSize - i #creates decending rank values [100,99,98,...]
+                rankList[i] = self.popSize - i #Creates decending rank values [100,99,98,...]
                 if i != 0:
                     rankList[i] += rankList[i-1] #Sums elemnts of array for Rank selection [100, 199, 197,...]
-        
-        
         while(len(new_pool) < self.popSize): 
-            rand = random.uniform(1, rankList[-1]) #random between 1 and sum of ranks
+            rand = random.uniform(1, rankList[-1]) #Random float between 1 and sum of ranks
             for i in range(0, self.popSize):
-                if rankList[i] > rand: #probabilistically selects element using rand
+                if rankList[i] > rand: #Probabilistically selects solution
                     parent1 = self.solution_list[i]
                     break
-            
             parent2 = parent1 
-            while(parent2 == parent1):
-                rand2 = random.uniform(1, rankList[-1]) #FUN FACT: This was originally before the while loop and was causing the error last night
+            while(parent2 == parent1): #Ensuring parent 2 is not equal to parent 1
+                rand2 = random.uniform(1, rankList[-1])
                 for i in range(0, self.popSize):
                     if rankList[i] > rand2:
                         parent2 = self.solution_list[i]
                         break
-            #END selection
-            #BEGIN crossover(1-pt)
-            crossover_point = random.randint(1, self.var_num - 2) #don't choose last or first positions
-        
+            crossover_point = random.randint(1, self.var_num - 2) #1-point crossover
             child1_string = parent1.bitString[0:crossover_point] + parent2.bitString[crossover_point:]
             child2_string = parent2.bitString[0:crossover_point] + parent1.bitString[crossover_point:]
-        
-            #END Crossover-crossover methods could take and return a pair of child individuals here
             child1 = Individual(0, child1_string) 
             child2 = Individual(0, child2_string)
-            children = [child1, child2] #TODO: probably easier way to iterate through two children
-
-            #Mutation stays the same for all selection/crossover
+            children = [child1, child2] 
             for individual in children:
-                for i in range (0, len(individual.bitString)):
+                for i in range (0, len(individual.bitString)): #Mutation
                     rand = random.random()
-                    if rand <= self.mut_prob: #
+                    if rand <= self.mut_prob:
                         new_bit = "0" if individual.bitString[i] == "1" else "1"
                         individual.bitString = individual.bitString[:i] + new_bit + individual.bitString[i + 1:]
-                
-
             child2.fitness = self.test_eval(self.clauses, child2)
             child1.fitness = self.test_eval(self.clauses, child1)
-
             new_pool.append(child1)
             new_pool.append(child2)
-
-
-        self.solution_list = new_pool
+        self.solution_list = new_pool 
             
             
-
-    
 def main():
     '''
     file_name = sys.argv[1]
@@ -414,7 +395,6 @@ def main():
     algo.generate_pool()
     gen_counter = 0
 
-    # algo.one_point_crossover()
     while gen_counter < iter_count:
 
         if select == "b":
@@ -440,73 +420,20 @@ def main():
             print("new best found")
             print(best_of_gen.fitness)
             iterFound = gen_counter
-        # for ind in algo.solution_list: #keeps track of best Individual so far
-        #     if ind.fitness > bestInd.fitness:
-        #         bestInd = Individual(ind.fitness, ind.bitString) 
-        #         #bestInd.fitness = ind.fitness
-        #         iterFound = gen_counter
-
         gen_counter += 1
-        #print(gen_counter)
         if gen_counter % 100 == 0:
             print (str(gen_counter))
             print (str(bestInd.fitness))
     end_time = int(round(time.time()) * 1000)
-    
-    #best_indivdual = algo.get_best()
-    #print ("Best solution fitness is: " + str(bestInd.fitness))
-    #print ("Best solution bitstring is: " + bestInd.bitString)
-
     complete_percentage = (bestInd.fitness / algo.clause_num) * 100
     best_string = algo.convert_string_to_vars(bestInd.bitString)
     
-    #best_indivdual = algo.get_best()
     print ("Filename:" + file_name)
     print ("Total number of variables/clauses possible: " + str(algo.var_num) + "/" + str(algo.clause_num))
     print ("Number of clauses satisfied: " + str(bestInd.fitness) + " or " + str(complete_percentage) + "%")
     print ("Best solution: " + best_string)
     print ("Iteration when optimal solution found: " + str(iterFound))
     print ("Test Duration = " + str(end_time - start_time))
-    # new_string = algo.convert_string("1 2 -3 4 -5 -6 7 -8 -9 -10 -11 12 13 14 15 -16 -17 18 -19 20 21 22 -23 -24 25 26 -27 -28 -29 30 -31 -32 -33 34 35 36 37 38 39 -40 41 -42 -43 -44 45 -46 -47 48 -49 50 51 -52 53 -54 55 -56 57 58 -59 -60 61 62 63 -64 65 -66 -67 -68 69 70 71 -72 -73 74 -75 76 77 78 79 -80 ")
-    # diffs = algo.compar_strings(new_string, best_indivdual.bitString)
-    # test_fitness = algo.test_eval(algo.clauses, new_string)
-    # print("test_fitness: " + str(test_fitness))
-
-    
-    
-
-    
-    
-    
-
-
-    
-    '''
-    test_file = "HG-3SAT-V250-C1000-7.cnf "
-    
-    algo.readFile()
-    #algo.rankSelection()
-    #algo.boltzmann_selection()
-    #algo.select_breeding_pool()
-    test = Individual(2, "000")
-    test2 = Individual(2, "111")
-    algo.solution_list.append(test)
-    algo.solution_list.append(test2)
-    # algo.flip_bit(test, 0)
-    # print(test.bitString)
-
-    # algo.flip_bit(test, 1)
-    # print(test.bitString)
-
-    # algo.flip_bit(test, 2)
-    # print(test.bitString)
-
-    algo.uniform_crossover()
-
-    # for ind in algo.solution_list:
-    #     print(ind.fitness)
-    
-    '''
 
 if __name__ == "__main__":
     main()   
