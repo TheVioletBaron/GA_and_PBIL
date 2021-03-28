@@ -1,3 +1,4 @@
+
 import re
 import random
 import math
@@ -103,13 +104,22 @@ class Pbil(object):
                         #sample = [1, 1, 0, 0, 0, 1, 0, 1, 0] #testing with TestProb.cnf should have fitness of 1 but gets 0
 
                         s_fit = self.evaluate_fitness(sample)
-                        if s_fit > best_fit:
-                                best_fit = s_fit
-                                best = sample
-                        if s_fit < worst_fit:
-                                worst_fit = s_fit
-                                worst = sample
-                        #print(best_fit)
+                        if s_fit >= best_fit:
+                                if s_fit == best_fit:
+                                        if random.random() > 0.5:
+                                                best_fit = s_fit
+                                                best = sample
+                                else:
+                                        best_fit = s_fit
+                                        best = sample
+                        if s_fit <= worst_fit:
+                                if s_fit == worst_fit:
+                                        if random.random() > 0.5:
+                                                worst_fit = s_fit
+                                                worst = sample
+                                else:
+                                        worst_fit = s_fit
+                                        worst = sample
                 for i in range(length):
                         pv[i] = pv[i]*(1 - self.alphaBest) + best[i] * self.alphaBest #pv appears to be being updated too 
                 for i in range(length):
@@ -125,12 +135,12 @@ class Pbil(object):
                                         pv[i] = pv[i] * (1 - self.mShift) + self.mShift
                         i += 1
                 samples = []
+                print(self.iters)
                 self.iters = self.iters - 1
                 if (self.evaluate_fitness(best) == max_fit):
                         break
 
-
-        
+        print(pv)
         self.final_iter = max_iters - self.iters
         self.final_count = self.evaluate_fitness(best)
         self.best = best
