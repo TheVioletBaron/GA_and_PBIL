@@ -24,6 +24,10 @@ class GA(object):
         self.cross_prob = cross_prob
         self.mut_prob = mut_prob
         self.clauses = []
+        self.sum_of_ranks = 0
+
+
+        
     
     """Function handle file reading on the MAXSAT problem, handling the first comment lines
     before obtaining the number of variables, clauses, and finally grabbing the clauses
@@ -96,14 +100,11 @@ class GA(object):
     """
     def rank_selection(self):
         self.total_probability = 0
-        
         self.solution_list.sort(key=self.rankSort)
+    
         for i in range(0, len(self.solution_list)): #Calculating each Individual's probability
-            self.solution_list[i].probability = (i + 1) / self.popSize
+            self.solution_list[i].probability = (i + 1) / self.sum_of_ranks
             self.total_probability += self.solution_list[i].probability
-        # print("breeding pool")
-        # for ind in self.solution_list:
-            # print(str(ind.fitness) + " " + str(ind.probability) )
         self.select_breeding_pool()
 
     """Executes boltzmann selection by summing up all fitness scores
@@ -112,12 +113,8 @@ class GA(object):
     """
     def boltzmann_selection(self):
         self.total_probability = 0
-        #calculate denominator (sum of e to the fitness)
-        denominator = 0
-        for i in range(0, len(self.solution_list)):
-            denominator += exp(self.solution_list[i].fitness)
-        for i in range(0, len(self.solution_list)):
-            self.solution_list[i].probability = exp(self.solution_list[i].fitness) / denominator
+        for i in range(0, len(self.solution_list)): #Calculating each Individual's probability
+            self.solution_list[i].probability = exp(self.solution_list[i].fitness) / self.sum_of_ranks
             self.total_probability += self.solution_list[i].probability
         self.select_breeding_pool()
     
@@ -130,12 +127,8 @@ class GA(object):
     def exponential_rank_selection(self):
         self.total_probability = 0
         self.solution_list.sort(key=self.rankSort)
-        denominator = 0
-        for i in range(0, len(self.solution_list)): #summing up the exponential ranks
-            denominator += exp(i)
-
         for j in range(0, len(self.solution_list)):
-            self.solution_list[j].probability = exp(j) / denominator
+            self.solution_list[j].probability = exp(j) / self.sum_of_ranks
             self.total_probability += self.solution_list[j].probability
 
         self.select_breeding_pool()
@@ -377,11 +370,11 @@ def main():
     ga_or_pbil = sys.argv[8]
     '''
 
-    #file_name = "t3pm3-5555.spn.cnf"
-    file_name = "s3v80c1000-7.cnf"
-    pop_size = 100
-    select = "r" #r is calling rank2 not rank right now
-    cross_method = "1p"
+    file_name = "t3pm3-5555.spn.cnf"
+    #file_name = "s3v80c1000-7.cnf"
+    pop_size = 30
+    select = "b" 
+    cross_method = "u"
     cross_prob = 0.7
     mut_prob = 0.04
     iter_count = 1000
@@ -396,22 +389,20 @@ def main():
     gen_counter = 0
 
     while gen_counter < iter_count:
-
+        #Calling selection
         if select == "b":
+            for i in range (0, algo.popSize + 1): #Summing up total of ranks for later use
+                algo.sum_of_ranks += exp(algo.solution_list[i - 1].fitness)
             algo.boltzmann_selection()
         elif select == "r":
+            for i in range (0, algo.popSize + 1): #Summing up total of ranks for later use
+                algo.sum_of_ranks += i
             algo.rank_selection()
         elif select == "er":
+            for i in range (0, algo.popSize + 1): #Summing up total of ranks for later use
+                algo.sum_of_ranks += exp(i)
             algo.exponential_rank_selection()
-       
-    
         algo.crossover(cross_method)
-       
-        # if cross_method == "u":
-        #     algo.uniform_crossover()
-        # elif cross_method == "1p":
-        #     algo.one_point_crossover()
-
         algo.mutate()
 
         best_of_gen = algo.get_best()
@@ -421,7 +412,7 @@ def main():
             print(best_of_gen.fitness)
             iterFound = gen_counter
         gen_counter += 1
-        if gen_counter % 100 == 0:
+        if gen_counter % 200 == 0:
             print (str(gen_counter))
             print (str(bestInd.fitness))
     end_time = int(round(time.time()) * 1000)
@@ -434,6 +425,7 @@ def main():
     print ("Best solution: " + best_string)
     print ("Iteration when optimal solution found: " + str(iterFound))
     print ("Test Duration = " + str(end_time - start_time))
+    print ("Best bitstring: " + bestInd.bitString)
 
 if __name__ == "__main__":
     main()   
