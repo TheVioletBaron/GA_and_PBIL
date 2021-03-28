@@ -177,7 +177,6 @@ class GA(object):
                     new_bit = "0" if individual.bitString[i] == "1" else "1"
                     individual.bitString = individual.bitString[:i] + new_bit + individual.bitString[i + 1:]
     
-    #randomly choose parents, ensure they are two diff individuals
     """To help with crossing over, randomly selects two Individuals from the solution
     list, ensuring that they are different, and then returns the Individual objects.
     """
@@ -186,8 +185,7 @@ class GA(object):
         parent1 = self.solution_list[pos1]
         pos2 = random.randint(0, (len(self.solution_list) - 1))
         parent2 = self.solution_list[pos2]
-        while pos2 == pos1:
-        #while parent1 == parent2: #If parents are the same object, finds a new second parent
+        while pos2 == pos1: #If parents are the same object, finds a new second parent
             if len(self.solution_list) == 1:
                 return parent1, parent1
             pos2 = random.randint(0, (len(self.solution_list) - 1))
@@ -359,12 +357,13 @@ class GA(object):
             new_pool.append(child2)
         self.solution_list = new_pool 
 
+    """Executes the selection, crossover, and mutation calls on a GA object, outputting the
+    desired information such as: best solution found, completion percentage, test duration,
+    and the name of the file tested.
+    """
     def runner(self):
-         #file_name = "t3pm3-5555.spn.cnf"
         iterFound = 0
-
         start_time = int(round(time.time()) * 1000)
-        
         self.readFile()
         self.generate_pool()
         gen_counter = 0
@@ -397,9 +396,9 @@ class GA(object):
             if gen_counter % 200 == 0:
                 print (str(gen_counter))
                 print (str(bestInd.fitness))
-        end_time = int(round(time.time()) * 1000)
+        end_time = int(round(time.time()) * 1000) #Recording the duration of the test
         complete_percentage = (bestInd.fitness / self.clause_num) * 100
-        best_string = self.convert_string_to_vars(bestInd.bitString)
+        best_string = self.convert_string_to_vars(bestInd.bitString) #Reformatting the best solution found
     
         print ("Filename:" + self.file_name)
         print ("Total number of variables/clauses possible: " + str(self.var_num) + "/" + str(self.clause_num))
@@ -408,5 +407,6 @@ class GA(object):
         print ("Iteration when optimal solution found: " + str(iterFound))
         print ("Test Duration = " + str(end_time - start_time))
         print ("Best bitstring: " + bestInd.bitString)
+        print ("")
 
 

@@ -25,7 +25,7 @@ def main():
 	
 	if (ga_or_pbil == "g"):
 		g = GA(problem_file, pop_size, pos_lr, neg_lr, mut_prob, mut_amnt, iter_cnt)
-		g.runner()
+		g.runner() #GA method that handles running and output
 		
 	elif (ga_or_pbil == "p"):
 		p = Pbil(problem_file, pop_size, pos_lr, neg_lr, mut_prob, mut_amnt, iter_cnt)
