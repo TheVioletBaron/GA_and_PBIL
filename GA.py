@@ -16,15 +16,17 @@ class GA(object):
     """Initiializing function for the GA class. Takes in a MAXSAT filename and variables specifying
     how to run a GA algorithim on it. Function is used to generate a GA object.
     """
-    def __init__(self, file, popSize, select, cross_method, mut_prob, cross_prob, generations):
-        self.file = file
-        self.popSize = popSize
+    def __init__(self, file_name, popSize, select, cross_method, mut_prob, cross_prob, generations):
+        self.file_name = file_name
+        self.popSize = int(popSize)
         self.select = select
         self.cross_method = cross_method
-        self.cross_prob = cross_prob
-        self.mut_prob = mut_prob
+        self.cross_prob = float(cross_prob)
+        self.mut_prob = float(mut_prob)
+        self.generations = int(generations)
         self.clauses = []
         self.sum_of_ranks = 0
+        
 
 
         
@@ -34,7 +36,7 @@ class GA(object):
     themselves and storing those in a list.
     """
     def readFile(self):
-        f = open(self.file, "r")
+        f = open(self.file_name, "r")
         lines = f.readlines()
         while lines[0][0] == 'c':   #Remove beggining comment lines in file
             lines.remove(lines[0])
@@ -356,87 +358,55 @@ class GA(object):
             new_pool.append(child1)
             new_pool.append(child2)
         self.solution_list = new_pool 
-            
-            
-def main():
-    '''
-    file_name = sys.argv[1]
-    pop_size = int(sys.argv[2])
-    select = sys.argv[3]
-    cross_method = sys.argv[4]
-    cross_prob = float(sys.argv[5])
-    mut_prob = float(sys.argv[6])
-    iter_count = int(sys.argv[7])
-    ga_or_pbil = sys.argv[8]
-    '''
 
-    #file_name = "t3pm3-5555.spn.cnf"
-    file_name = "s3v80c1000-7.cnf"
-    pop_size = 30
-    select = "b" 
-    cross_method = "u"
-    cross_prob = 0.7
-    mut_prob = 0.04
-    iter_count = 1000
-    ga_or_pbil = "g"
-    bestInd = Individual(0, '1') 
-    iterFound = 0
+    def runner(self):
+         #file_name = "t3pm3-5555.spn.cnf"
+        iterFound = 0
 
-    start_time = int(round(time.time()) * 1000)
-    algo = GA(file_name, pop_size, select, cross_method, cross_prob, mut_prob, iter_count)
-    algo.readFile()
-    algo.generate_pool()
-    gen_counter = 0
-
-    while gen_counter < iter_count:
-        #Calling selection
-        if select == "b":
-            for i in range (0, algo.popSize + 1): #Summing up total of ranks for later use
-                algo.sum_of_ranks += exp(algo.solution_list[i - 1].fitness)
-            algo.boltzmann_selection()
-        elif select == "r":
-            for i in range (0, algo.popSize + 1): #Summing up total of ranks for later use
-                algo.sum_of_ranks += i
-            algo.rank_selection()
-        elif select == "er":
-            for i in range (0, algo.popSize + 1): #Summing up total of ranks for later use
-                algo.sum_of_ranks += exp(i)
-            algo.exponential_rank_selection()
-        algo.crossover(cross_method)
-        algo.mutate()
-
-        best_of_gen = algo.get_best()
-        if best_of_gen.fitness > bestInd.fitness:
-            bestInd = best_of_gen
-            print("new best found")
-            print(best_of_gen.fitness)
-            iterFound = gen_counter
-        gen_counter += 1
-        if gen_counter % 200 == 0:
-            print (str(gen_counter))
-            print (str(bestInd.fitness))
-    end_time = int(round(time.time()) * 1000)
-    complete_percentage = (bestInd.fitness / algo.clause_num) * 100
-    best_string = algo.convert_string_to_vars(bestInd.bitString)
-    
-    print ("Filename:" + file_name)
-    print ("Total number of variables/clauses possible: " + str(algo.var_num) + "/" + str(algo.clause_num))
-    print ("Number of clauses satisfied: " + str(bestInd.fitness) + " or " + str(complete_percentage) + "%")
-    print ("Best solution: " + best_string)
-    print ("Iteration when optimal solution found: " + str(iterFound))
-    print ("Test Duration = " + str(end_time - start_time))
-    print ("Best bitstring: " + bestInd.bitString)
-
-if __name__ == "__main__":
-    main()   
-    
-    
+        start_time = int(round(time.time()) * 1000)
         
+        self.readFile()
+        self.generate_pool()
+        gen_counter = 0
+        bestInd = Individual(0,"1")
 
+        while gen_counter < self.generations:
+            #Calling selection
+            if self.select == "b":
+                for i in range (0, self.popSize + 1): #Summing up total of ranks for later use
+                    self.sum_of_ranks += exp(self.solution_list[i - 1].fitness)
+                self.boltzmann_selection()
+            elif self.select == "r":
+                for i in range (0, self.popSize + 1): #Summing up total of ranks for later use
+                    self.sum_of_ranks += i
+                self.rank_selection()
+            elif self.select == "er":
+                for i in range (0, self.popSize + 1): #Summing up total of ranks for later use
+                    self.sum_of_ranks += exp(i)
+                self.exponential_rank_selection()
+            self.crossover(self.cross_method)
+            self.mutate()
 
-
-
-
-
+            best_of_gen = self.get_best()
+            if best_of_gen.fitness > bestInd.fitness:
+                bestInd = best_of_gen
+                print("new best found")
+                print(best_of_gen.fitness)
+                iterFound = gen_counter
+            gen_counter += 1
+            if gen_counter % 200 == 0:
+                print (str(gen_counter))
+                print (str(bestInd.fitness))
+        end_time = int(round(time.time()) * 1000)
+        complete_percentage = (bestInd.fitness / self.clause_num) * 100
+        best_string = self.convert_string_to_vars(bestInd.bitString)
+    
+        print ("Filename:" + self.file_name)
+        print ("Total number of variables/clauses possible: " + str(self.var_num) + "/" + str(self.clause_num))
+        print ("Number of clauses satisfied: " + str(bestInd.fitness) + " or " + str(complete_percentage) + "%")
+        print ("Best solution: " + best_string)
+        print ("Iteration when optimal solution found: " + str(iterFound))
+        print ("Test Duration = " + str(end_time - start_time))
+        print ("Best bitstring: " + bestInd.bitString)
 
 
