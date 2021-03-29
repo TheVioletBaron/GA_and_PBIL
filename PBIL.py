@@ -1,6 +1,8 @@
+
 import re
 import random
 import math
+import time
 '''
 Population Based Incremental Learning
 
@@ -37,12 +39,12 @@ class Pbil(object):
                         break
                 start_index = start_index + 1
         lines = lines[start_index:]
-        for line in lines: 
-                clause = line.strip().split() 
+        for line in lines:
+                clause = line.strip().split()
                 passed = True
                 for cv in clause[:-1]: #changed so Ignores 0
-                        sv = individual[abs(int(cv)) - 1] 
-                        if sv == 0 and int(cv) > 0: 
+                        sv = individual[abs(int(cv)) - 1]
+                        if sv == 0 and int(cv) > 0:
                                 passed = False
                         if sv == 1 and int(cv) < 0:
                                 passed = False
@@ -54,7 +56,7 @@ class Pbil(object):
     def __init__(self, file, popSize, alphaBest, alphaWorst, mProb, mShift, iters):
         """
         """
-        
+        start_time = int(round(time.time()*1000))
         self.file = file
         self.popSize = int(popSize)
         self.alphaBest = float(alphaBest)
@@ -66,14 +68,13 @@ class Pbil(object):
         lines = cnf.readlines()
         length = 0
         max_fit = 0
+        print("Number of iterations: " + str(self.iters))
+        print("Population size: " + str(self.popSize))
         for line in lines:
                 has = re.search("[0-9]+[ ]+[0-9]+", line)
                 if (has):
-                       print("line: " + line)
                        length = int(has.group().split()[0])
                        max_fit = int(has.group().split()[1])
-                       print("max_fit: " + str(max_fit))
-                       print("length: " + str(length))
                        break
         pv = [0.5] * length
         samples = []
@@ -84,16 +85,13 @@ class Pbil(object):
         max_iters = self.iters
         while self.iters:
                 while len(samples) < self.popSize: #building correct number of samples
-                        
                         sample = []
                         for i in pv:
                                 if (random.random() > i): #Changed: to > because probability in pv is for bit being 1? 
                                         sample.append(0)
                                 else:
                                         sample.append(1)
-                                
                         samples.append(sample)
-                        
                 best_fit = 0
                 worst_fit = max_fit + 1
                 best = []
@@ -103,13 +101,22 @@ class Pbil(object):
                         #sample = [1, 1, 0, 0, 0, 1, 0, 1, 0] #testing with TestProb.cnf should have fitness of 1 but gets 0
 
                         s_fit = self.evaluate_fitness(sample)
-                        if s_fit > best_fit:
-                                best_fit = s_fit
-                                best = sample
-                        if s_fit < worst_fit:
-                                worst_fit = s_fit
-                                worst = sample
-                        #print(best_fit)
+                        if s_fit >= best_fit:
+                                if s_fit == best_fit:
+                                        if random.random() > 0.5:
+                                                best_fit = s_fit
+                                                best = sample
+                                else:
+                                        best_fit = s_fit
+                                        best = sample
+                        if s_fit <= worst_fit:
+                                if s_fit == worst_fit:
+                                        if random.random() > 0.5:
+                                                worst_fit = s_fit
+                                                worst = sample
+                                else:
+                                        worst_fit = s_fit
+                                        worst = sample
                 for i in range(length):
                         pv[i] = pv[i]*(1 - self.alphaBest) + best[i] * self.alphaBest #pv appears to be being updated too 
                 for i in range(length):
@@ -125,12 +132,14 @@ class Pbil(object):
                                         pv[i] = pv[i] * (1 - self.mShift) + self.mShift
                         i += 1
                 samples = []
+                #print(self.iters)
                 self.iters = self.iters - 1
                 if (self.evaluate_fitness(best) == max_fit):
                         break
 
-
-        
+        #print(pv)
+        end_time = int(round(time.time()*1000))
+        print("Test duration: " + str(end_time - start_time))
         self.final_iter = max_iters - self.iters
         self.final_count = self.evaluate_fitness(best)
         self.best = best
