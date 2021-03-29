@@ -1,9 +1,10 @@
 
-import re
-import random
-import math
-import time
-'''
+"""
+Authors: Casey Edmonds-Estes and Mike Batal
+Date 28 March 2021
+Course: Nature Inspired Computation
+File Description:
+
 Population Based Incremental Learning
 
   Parameters
@@ -23,7 +24,11 @@ Population Based Incremental Learning
             The mutation amount
         iters : int
             The maximum number of iterations
-'''
+"""
+import re
+import random
+import math
+import time
 
 class Pbil(object):
     
