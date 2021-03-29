@@ -1,5 +1,5 @@
 # GA_and_PBIL
-Authors: Jasper Gordon, Aly Hummel, Casey Edmonds-Estes, Mike Batal
+Authors: Jasper Gordon, Aly Hummel, Casey Edmonds-Estes, Mike Batal.
 The goal of this project is to use genetic algorithms (GA) and population-based incremental learning (PBIL)
 to solve Maximum satisfiability problems (MAXSAT). Running this code requires that that the proper
 MAXSAT files are saved to the same directory as these files (a folder should be included in the download).
