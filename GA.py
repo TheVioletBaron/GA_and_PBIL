@@ -83,7 +83,10 @@ class GA(object):
                 individual.fitness += 1
         return individual.fitness
 
-    #defines that individuals should be sorted by fitness  THIS SEEMS STRANGE MAYBE?
+    """Helper to allow sorting of solutions based on their fitness values.
+    Takes an Individual object as an argument, returns that Individual's fitness
+    which is an int value.
+    """
     def rankSort(self, individual):
         return individual.fitness
 
@@ -94,7 +97,6 @@ class GA(object):
     def rank_selection(self):
         self.total_probability = 0
         self.solution_list.sort(key=self.rankSort)
-    
         for i in range(0, len(self.solution_list)): #Calculating each Individual's probability
             self.solution_list[i].probability = (i + 1) / self.sum_of_ranks
             self.total_probability += self.solution_list[i].probability
@@ -111,7 +113,6 @@ class GA(object):
             self.total_probability += self.solution_list[i].probability
         self.select_breeding_pool()
     
-
     """Executes exponential rank selection, calculating an indvidual's probability of
     being selected by taking e to the power of the individual's rank, and dividing
     that by the sum of e to the power of all the Inviduals' ranks. Calls method to
@@ -369,6 +370,9 @@ class GA(object):
             self.mutate()
 
             best_of_gen = self.get_best()
+            if bestInd.fitness == self.clause_num: #Exiting if perfect solution is found
+                print ("Bingo! The perfect soltion has been found. Congratulations")
+                break
             if best_of_gen.fitness > bestInd.fitness:
                 bestInd = best_of_gen
                 iterFound = gen_counter
