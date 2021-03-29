@@ -27,7 +27,9 @@ Population Based Incremental Learning
 
 class Pbil(object):
     
-        #Fixed, previous version was returning low fitness
+    """
+    Helper function to determine the fitness of an individual
+    """
     def evaluate_fitness(self, individual): 
         cnf = open(self.file)
         fitness = 0
@@ -42,7 +44,7 @@ class Pbil(object):
         for line in lines:
                 clause = line.strip().split()
                 passed = True
-                for cv in clause[:-1]: #changed so Ignores 0
+                for cv in clause[:-1]:
                         sv = individual[abs(int(cv)) - 1]
                         if sv == 0 and int(cv) > 0:
                                 passed = False
@@ -50,13 +52,17 @@ class Pbil(object):
                                 passed = False
                 if passed:
                         fitness = fitness + 1
-        return fitness #Fitness is always returned correctly when using TestProb.cnf
+        return fitness
 
 
     def __init__(self, file, popSize, alphaBest, alphaWorst, mProb, mShift, iters):
         """
+        Creates a PBIL and iterates on it until a solution is found or the maxiumum
+        iteration count is reached
         """
         start_time = int(round(time.time()*1000))
+        
+        #setup
         self.file = file
         self.popSize = int(popSize)
         self.alphaBest = float(alphaBest)
@@ -83,23 +89,26 @@ class Pbil(object):
         best = []
         worst = []
         max_iters = self.iters
+        
+        #iteration over the probability vector
         while self.iters:
-                while len(samples) < self.popSize: #building correct number of samples
+        
+                #generate samples
+                while len(samples) < self.popSize:
                         sample = []
                         for i in pv:
-                                if (random.random() > i): #Changed: to > because probability in pv is for bit being 1? 
+                                if (random.random() > i):
                                         sample.append(0)
                                 else:
                                         sample.append(1)
                         samples.append(sample)
+
+                #evaluate samples and select the best and the worst
                 best_fit = 0
                 worst_fit = max_fit + 1
                 best = []
                 worst = []
                 for sample in samples:
-                        #Edited to test evalFitness()
-                        #sample = [1, 1, 0, 0, 0, 1, 0, 1, 0] #testing with TestProb.cnf should have fitness of 1 but gets 0
-
                         s_fit = self.evaluate_fitness(sample)
                         if s_fit >= best_fit:
                                 if s_fit == best_fit:
@@ -117,12 +126,15 @@ class Pbil(object):
                                 else:
                                         worst_fit = s_fit
                                         worst = sample
+                                      
+                #adjust the probability vector toward the best sample and away from the worst sample
                 for i in range(length):
-                        pv[i] = pv[i]*(1 - self.alphaBest) + best[i] * self.alphaBest #pv appears to be being updated too 
+                        pv[i] = pv[i]*(1 - self.alphaBest) + best[i] * self.alphaBest
                 for i in range(length):
                         if best[i] != worst[i]:
                                 pv[i] = pv[i]*(1 - self.alphaWorst) - worst[i] * self.alphaWorst
-                #print(pv)
+                
+                #mutate the probability vector
                 i = 0
                 while(i < len(pv)): #Mutation
                         if(random.random() < self.mProb):
@@ -131,13 +143,14 @@ class Pbil(object):
                                 else:
                                         pv[i] = pv[i] * (1 - self.mShift) + self.mShift
                         i += 1
+                
+                #setup for next loop
                 samples = []
-                #print(self.iters)
                 self.iters = self.iters - 1
                 if (self.evaluate_fitness(best) == max_fit):
                         break
 
-        #print(pv)
+        #cleanup
         end_time = int(round(time.time()*1000))
         print("Test duration: " + str(end_time - start_time))
         self.final_iter = max_iters - self.iters
