@@ -3,7 +3,7 @@ Authors: Jasper Gordon, Aly Hummel, Casey Edmonds-Estes, Mike Batal
 The goal of this project is to use genetic algorithms (GA) and population-based incremental learning (PBIL)
 to solve Maximum satisfiability problems (MAXSAT). Running this code requires that that the proper
 MAXSAT files are saved to the same directory as these files (a folder should be included in the download).
-To run this code, in terminal line you will need to type python3 Driver.py followed by 8 arguments on one single line. 
+To run this code from the command, line you will need to type python3 Driver.py followed by 8 arguments on one single line. 
 Those arguemnts include:
 
 1. Algoirthm selection: g for GA or p for pbil
@@ -17,7 +17,7 @@ b = boltzman)
 8. Desired number of iterations (start with 100)
 
 
-After placing each of those arugments after python3 Driver.py all in one line seperated by spaces,
-press enter and you should soon see outputs with the results.
+After including each of those arugments after python3 Driver.py all on one line seperated by spaces,
+press enter to run the program and your command shell will print the results.
 
 Example arugment line: python3 Driver.py g t3pm3-5555.spn.cnf 50 r 1p .01 .7 100
