@@ -16,5 +16,8 @@ b = boltzman)
 7. For pbil: mutation amount. For GA: The crossover probability (0.7 is typical starting spot)
 8. Desired number of iterations (start with 100)
 
+
 After placing each of those arugments after python3 Driver.py all in one line seperated by spaces,
 press enter and you should soon see outputs with the results.
+
+Example arugment line: python3 Driver.py g t3pm3-5555.spn.cnf 50 r 1p .01 .7 100
