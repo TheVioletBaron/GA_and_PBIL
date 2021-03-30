@@ -36,17 +36,8 @@ class Pbil(object):
     Helper function to determine the fitness of an individual
     """
     def evaluate_fitness(self, individual): 
-        cnf = open(self.file)
         fitness = 0
-        lines = cnf.readlines()
-        start_index = 0
-        for line in lines:
-                has = re.match("(-?[0-9]+| )+", line)
-                if (has): 
-                        break
-                start_index = start_index + 1
-        lines = lines[start_index:]
-        for line in lines:
+        for line in self.lines:
                 clause = line.strip().split()
                 passed = False
                 for cv in clause[:-1]:
@@ -76,17 +67,24 @@ class Pbil(object):
         self.mShift = float(mShift)
         self.iters = int(iters)
         cnf = open(self.file)
-        lines = cnf.readlines()
+        self.lines = cnf.readlines()
         length = 0
         max_fit = 0
         print("Number of iterations: " + str(self.iters))
         print("Population size: " + str(self.popSize))
-        for line in lines:
+        for line in self.lines:
                 has = re.search("[0-9]+[ ]+[0-9]+", line)
                 if (has):
                        length = int(has.group().split()[0])
                        max_fit = int(has.group().split()[1])
                        break
+        start_index = 0
+        for line in self.lines:
+                has = re.match("(-?[0-9]+| )+", line)
+                if (has): 
+                        break
+                start_index = start_index + 1
+        self.lines = self.lines[start_index:]
         pv = [0.5] * length
         samples = []
         best_fit = 0
