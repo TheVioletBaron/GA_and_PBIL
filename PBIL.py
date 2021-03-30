@@ -48,13 +48,13 @@ class Pbil(object):
         lines = lines[start_index:]
         for line in lines:
                 clause = line.strip().split()
-                passed = True
+                passed = False
                 for cv in clause[:-1]:
                         sv = individual[abs(int(cv)) - 1]
                         if sv == 0 and int(cv) > 0:
-                                passed = False
+                                passed = True
                         if sv == 1 and int(cv) < 0:
-                                passed = False
+                                passed = True
                 if passed:
                         fitness = fitness + 1
         return fitness
